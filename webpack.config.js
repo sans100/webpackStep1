@@ -6,11 +6,12 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin"); // css파일 �
 module.exports = {
     context: path.resolve(__dirname, './src/'),
     entry: {
-        ui: ['./css/style.less', './js/app.js']
+        ui: ['./css/style.less', './js/app.js'],
+        gugudan: './js/gugudan.js'
     },
     output: {
         path: path.resolve(__dirname, './dist/'),
-        filename: './js/aap.js'
+        filename: './js/[name].js'
     },
     module: {
         rules: [
@@ -21,6 +22,16 @@ module.exports = {
                     use: ['css-loader', 'less-loader'],
                     publicPath: '../'
                 })
+            },
+            {
+                test: /\.m?js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env'],
+                    }
+                }
             }
         ]
     },
@@ -28,7 +39,15 @@ module.exports = {
         new HtmlWebpackPlugin(
             {
                 template: './index.html',
-                inject: 'head', // script 태그 놓는 위치
+                inject: 'body', // script 태그 놓는 위치
+                chunks: ['ui']
+            }
+        ),
+        new HtmlWebpackPlugin(
+            {
+                filename: 'gugutest.html',
+                template: './gugutest.html',
+                inject: 'body',
             }
         ),
         new ExtractTextPlugin('./css/style.css'),

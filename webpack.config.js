@@ -1,7 +1,24 @@
 const path = require('path');
+const fs = require('fs'); // fileSystem
 const HtmlWebpackPlugin = require('html-webpack-plugin'); // html 파일 생성
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin"); // css파일 별로 추출
+
+function generateHtmlPlugins(templateDir) {
+    const templateFiles = fs.readdirSync(path.resolve(__dirname, templateDir));
+    const returnData = [];
+    templateFiles.map(file => { // 배열의 재배열
+        if (path.extname(file).toLowerCase() === '.html') { // 확장자 html 파일을
+            returnData.push(new HtmlWebpackPlugin({ // 하나씩 배열에 입력
+                filename: file,
+                template: file,
+                inject: 'body',
+            }));
+        }
+    })
+    return returnData;
+}
+const htmlPlugins = generateHtmlPlugins('./src/');
 
 module.exports = {
     context: path.resolve(__dirname, './src/'),
@@ -36,21 +53,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin(
-            {
-                template: './index.html',
-                inject: 'body', // script 태그 놓는 위치
-                chunks: ['ui']
-            }
-        ),
-        new HtmlWebpackPlugin(
-            {
-                filename: 'gugutest.html',
-                template: './gugutest.html',
-                inject: 'body',
-            }
-        ),
         new ExtractTextPlugin('./css/style.css'),
         new UglifyJsPlugin()
-    ]
+    ].concat(htmlPlugins)
 }

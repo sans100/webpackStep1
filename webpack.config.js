@@ -7,15 +7,15 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin"); // css파일 �
 function generateHtmlPlugins(templateDir) {
     const templateFiles = fs.readdirSync(path.resolve(__dirname, templateDir));
     const returnData = [];
-    templateFiles.map(file => { // 배열의 재배열
-        if (path.extname(file).toLowerCase() === '.html') { // 확장자 html 파일을
+    templateFiles.map(file => { // 배열의 재배열 .map()
+        if (path.extname(file).toLowerCase() === '.html') { // 확장자 html 파일만 
             returnData.push(new HtmlWebpackPlugin({ // 하나씩 배열에 입력
                 filename: file,
                 template: file,
                 inject: 'body',
             }));
         }
-    })
+    });
     return returnData;
 }
 const htmlPlugins = generateHtmlPlugins('./src/');
@@ -49,6 +49,18 @@ module.exports = {
                         presets: ['@babel/preset-env'],
                     }
                 }
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: './',
+                            name: '[path][name].[ext]',
+                        }
+                    }
+                ]
             }
         ]
     },
